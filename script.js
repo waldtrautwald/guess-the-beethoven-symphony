@@ -80,7 +80,6 @@ let streak = 0;
 
 const play = async () => {
     if (playing || range === null) {
-        loading.innerHTML = "";
         return;
     }
     playing = true;
@@ -127,6 +126,7 @@ const click = async () => {
 const reroll = async () => {
     loading.innerHTML = "Loading...";
     range = await selectRandomRange();
+    loading.innerHTML = "";
     play();
 };
 const main = async () => {
