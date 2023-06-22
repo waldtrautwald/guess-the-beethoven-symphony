@@ -37,6 +37,7 @@ let movementsFilter = [];
 const LENGTH = 5
 const audioContext = new AudioContext();
 const selectRandomRange = async () => {
+    console.log("selectRandomRange");
     const filteredPieces = pieces
         .filter(piece => symphoniesFilter.includes(piece.name[0]))
         .filter(piece => movementsFilter.includes(piece.name[1]));
@@ -78,6 +79,8 @@ const score = [0, 0];
 
 let streak = 0;
 
+const LOADING = "loading";
+
 const play = async () => {
     if (playing || range === null) {
         return;
@@ -108,11 +111,15 @@ const reveal = async () => {
     output.innerHTML = `${correctText}<br/>${scoreText}<br/>${streakText}`;
     range = null;
     loading.innerHTML = "Loading...";
+    range = LOADING;
     range = await selectRandomRange();
     loading.innerHTML = "";
 };
 
 const click = async () => {
+    if (range === LOADING) {
+        return;
+    }
     if (range === null) {
         reroll();
     } else if (input.value === "") {
@@ -125,6 +132,7 @@ const click = async () => {
 
 const reroll = async () => {
     loading.innerHTML = "Loading...";
+    range = LOADING;
     range = await selectRandomRange();
     loading.innerHTML = "";
     play();
