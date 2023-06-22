@@ -30,29 +30,9 @@ const paddingEnd = 5;
 //     audio.load();
 // });
 
-const lesserKnownSymphonies = [
-    "1",
-    "2",
-    "4",
-    "8",
-];
-const betterKnownSymphonies = [
-    "3",
-    "5",
-    "6",
-    "7",
-    "9",
-];
-const allSymphonies = lesserKnownSymphonies.concat(betterKnownSymphonies);
 
-const filters = {
-    "all": allSymphonies,
-    "lesser-known": lesserKnownSymphonies,
-    "better-known": betterKnownSymphonies,
-}
-
-let symphoniesFilter = allSymphonies;
-let movementsFilter = []
+let symphoniesFilter = [];
+let movementsFilter = [];
 
 const LENGTH = 5
 const audioContext = new AudioContext();
@@ -60,6 +40,9 @@ const selectRandomRange = async () => {
     const filteredPieces = pieces
         .filter(piece => symphoniesFilter.includes(piece.name[0]))
         .filter(piece => movementsFilter.includes(piece.name[1]));
+    if (filteredPieces.length === 0) {
+        return null;
+    }
     const piece = filteredPieces[Math.floor(Math.random() * filteredPieces.length)];
 
     const response = await fetch(piece.url);
@@ -158,6 +141,18 @@ const main = async () => {
             reroll();
         });
     });
+
+    const symphonyCheckboxes = document.querySelectorAll(".symphonies input");
+    symphonyCheckboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            symphoniesFilter.push(checkbox.value);
+        }
+        checkbox.addEventListener('change', () => {
+            symphoniesFilter = Array.from(symphonyCheckboxes).filter(checkbox => checkbox.checked).map(checkbox => checkbox.value);
+            reroll();
+        });
+    });
+
 
     const movementCheckboxes = document.querySelectorAll(".movements input");
     movementCheckboxes.forEach(checkbox => {
