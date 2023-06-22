@@ -43,6 +43,7 @@ const selectRandomRange = async () => {
     if (filteredPieces.length === 0) {
         return null;
     }
+
     const piece = filteredPieces[Math.floor(Math.random() * filteredPieces.length)];
 
     const response = await fetch(piece.url);
@@ -79,6 +80,7 @@ let streak = 0;
 
 const play = async () => {
     if (playing || range === null) {
+        loading.innerHTML = "";
         return;
     }
     playing = true;
@@ -112,7 +114,9 @@ const reveal = async () => {
 };
 
 const click = async () => {
-    if (input.value === "") {
+    if (range === null) {
+        reroll();
+    } else if (input.value === "") {
         play();
     } else {
         await reveal();
@@ -138,7 +142,6 @@ const main = async () => {
         }
         radio.addEventListener('change', () => {
             symphoniesFilter = filters[radio.value];
-            reroll();
         });
     });
 
@@ -149,7 +152,6 @@ const main = async () => {
         }
         checkbox.addEventListener('change', () => {
             symphoniesFilter = Array.from(symphonyCheckboxes).filter(checkbox => checkbox.checked).map(checkbox => checkbox.value);
-            reroll();
         });
     });
 
@@ -161,13 +163,11 @@ const main = async () => {
         }
         checkbox.addEventListener('change', () => {
             movementsFilter = Array.from(movementCheckboxes).filter(checkbox => checkbox.checked).map(checkbox => checkbox.value);
-            reroll();
         });
     });
 
     loading.innerHTML = "Loading...";
     pieces = await loadPieces();
-    range = await selectRandomRange();
     loading.innerHTML = "";
 
     input.addEventListener('keydown', async (evt) => {
