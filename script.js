@@ -30,10 +30,37 @@ const paddingEnd = 5;
 //     audio.load();
 // });
 
+const lesserKnownSymphonies = [
+    "1",
+    "2",
+    "4",
+    "8",
+];
+const betterKnownSymphonies = [
+    "3",
+    "5",
+    "6",
+    "7",
+    "9",
+];
+const allSymphonies = lesserKnownSymphonies.concat(betterKnownSymphonies);
+
+const filters = {
+    "all": allSymphonies,
+    "lesser-known": lesserKnownSymphonies,
+    "better-known": betterKnownSymphonies,
+}
+
+let symphoniesFilter = allSymphonies;
+let movementsFilter = []
+
 const LENGTH = 5
 const audioContext = new AudioContext();
 const selectRandomRange = async () => {
-    const piece = pieces[Math.floor(Math.random() * pieces.length)];
+    const filteredPieces = pieces
+        .filter(piece => symphoniesFilter.includes(piece.name[0]))
+        .filter(piece => movementsFilter.includes(piece.name[1]));
+    const piece = filteredPieces[Math.floor(Math.random() * filteredPieces.length)];
 
     const response = await fetch(piece.url);
     const buffer = await response.arrayBuffer();
@@ -97,10 +124,24 @@ const reveal = async () => {
     output.innerHTML = `${correctText}<br/>${scoreText}<br/>${streakText}`;
     range = null;
     loading.innerHTML = "Loading...";
-    range = await selectRandomRange(5);
+    range = await selectRandomRange();
     loading.innerHTML = "";
 };
 
+const click = async () => {
+    if (input.value === "") {
+        play();
+    } else {
+        await reveal();
+        play();
+    }
+}
+
+const reroll = async () => {
+    loading.innerHTML = "Loading...";
+    range = await selectRandomRange();
+    play();
+};
 const main = async () => {
     output = document.querySelector("#output");
     button = document.querySelector("button");
@@ -108,19 +149,31 @@ const main = async () => {
     input.value = "";
     loading = document.querySelector("#loading");
 
+    document.querySelectorAll(".radios input").forEach(radio => {
+        if (radio.checked) {
+            symphoniesFilter = filters[radio.value];
+        }
+        radio.addEventListener('change', () => {
+            symphoniesFilter = filters[radio.value];
+            reroll();
+        });
+    });
+
+    const movementCheckboxes = document.querySelectorAll(".movements input");
+    movementCheckboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            movementsFilter.push(checkbox.value);
+        }
+        checkbox.addEventListener('change', () => {
+            movementsFilter = Array.from(movementCheckboxes).filter(checkbox => checkbox.checked).map(checkbox => checkbox.value);
+            reroll();
+        });
+    });
+
     loading.innerHTML = "Loading...";
     pieces = await loadPieces();
     range = await selectRandomRange();
     loading.innerHTML = "";
-
-    const click = async () => {
-        if (input.value === "") {
-            play();
-        } else {
-            await reveal();
-        }
-    }
-
 
     input.addEventListener('keydown', async (evt) => {
         if (evt.key === 'Enter') {

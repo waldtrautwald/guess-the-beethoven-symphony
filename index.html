@@ -22,6 +22,15 @@
             font-size: 3em;
         }
 
+        .radios {
+            font-size: 2em;
+        }
+
+        .radios input[type="radio"] {
+            height: 0.3em;
+            width: 0.3em;
+        }
+
         #loading {
             font-size: 2em;
         }
@@ -48,8 +57,32 @@
 
 <body>
     <h1>Guess the Beethoven symphony movement<br />from a random 5 second clip</h1>
-    <input type="text" />
-    <button>Play/Guess</button>
+    <div>
+        <input type="text" />
+        <button>Play/Guess</button>
+    </div>
+    <div class="radios">
+        <!-- Radio buttons with labels: All; 1,2,4,8; 3,5,6,7,9 -->
+        <input type="radio" id="all" name="symphony" value="all" checked>
+        <label for="all">All</label>
+        <input type="radio" id="lesser-known" name="symphony" value="lesser-known">
+        <label for="lesser-known">1,2,4,8</label>
+        <input type="radio" id="better-known" name="symphony" value="better-known">
+        <label for="better-known">3,5,6,7,9</label>
+    </div>
+    <div class="movements">
+        <!-- checkboxes with labels: 1; 2; 3; 4; 5 -->
+        <input type="checkbox" id="1" name="movement" value="1" checked>
+        <label for="1">1</label>
+        <input type="checkbox" id="2" name="movement" value="2" checked>
+        <label for="2">2</label>
+        <input type="checkbox" id="3" name="movement" value="3" checked>
+        <label for="3">3</label>
+        <input type="checkbox" id="4" name="movement" value="4" checked>
+        <label for="4">4</label>
+        <input type="checkbox" id="5" name="movement" value="5" checked>
+        <label for="5">5</label>
+    </div>
     <div id="loading"></div>
     <div id="output"></div>
 
